@@ -14,6 +14,8 @@ MQTT_IP_ADDR = "localhost"
 MQTT_PORT = 1883
 MQTT_ADDR = "{}:{}".format(MQTT_IP_ADDR, str(MQTT_PORT))
 
+INTENT_ALL = "hermes/intent/#"
+
 class SnipsConfigParser(ConfigParser.SafeConfigParser):
     def to_dict(self):
         return {section: {option_name : option for option_name, option in self.items(section)} for section in self.sections()}
@@ -67,19 +69,54 @@ def callback(hermes, intent_message):
             number = int(n[0])
         except ValueError, e:
             number = 2
+            session_id = intent_message.session_id
+            sentence = "Je n'ai la capacité de vous faire que deux cafés maximum, sinon va chez starbucks !"
+            hermes.publish_continue_session(intent_message.session_id,sentence,INTENT_ALL)
     print(t)
     print(s)
     print(ta)
+    if (number == 1) :
+        if (taille_cafe == "") :
+            session_id = intent_message.session_id
+            sentence = "Et c'est parti pour un café"
+            hermes.publish_continue_session(intent_message.session_id,sentence,INTENT_ALL)
+         else :
+            session_id = intent_message.session_id
+            sentence = "Je vais vous servir un " + s + " café"
+            hermes.publish_continue_session(intent_message.session_id,sentence,INTENT_ALL)
+    else : 
+        if (taille_cafe == "") :
+            session_id = intent_message.session_id
+            sentence = "Je vous prépare tout de suite deux cafés"
+            hermes.publish_continue_session(intent_message.session_id,sentence,INTENT_ALL)
+         else :
+            session_id = intent_message.session_id
+            sentence = "Je vais vous servir deux " + s + " café"
+            hermes.publish_continue_session(intent_message.session_id,sentence,INTENT_ALL)
+            
     hermes.skill.cafe.verser(type_cafe = type_cafe,
                 taille_cafe = taille_cafe,
                 intensite_cafe = intensite_cafe,
                 number = number)
+    handle_say_again_always(self, topic, payload)
 
 def cafe_io(hermes, intent_message):
+      session_id = intent_message.session_id
+      sentence = "Haaaaaaaa, pardon je viens de bailler"
+      hermes.publish_continue_session(intent_message.session_id,sentence,INTENT_ALL)
       hermes.skill.cafe.cafe_io()
+      
+        
 def cafe_nettoie(hermes, intent_message):
+      session_id = intent_message.session_id
+      sentence = "je me rince, merci de patienter"
+      hermes.publish_continue_session(intent_message.session_id,sentence,INTENT_ALL)
       hermes.skill.cafe.nettoie()
+        
 def cafe_vapeur(hermes, intent_message):
+      session_id = intent_message.session_id
+      sentence = "attention je vais faire de la vapeur.... tchou tchou ! "
+      hermes.publish_continue_session(intent_message.session_id,sentence,INTENT_ALL)
       hermes.skill.cafe.vapeur()
 
 if __name__ == "__main__":
